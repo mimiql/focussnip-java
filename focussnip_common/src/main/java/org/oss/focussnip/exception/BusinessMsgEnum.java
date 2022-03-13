@@ -2,14 +2,21 @@ package org.oss.focussnip.exception;
 
 public enum BusinessMsgEnum {
     /** 参数异常 */
-    PARMETER_EXCEPTION("102", "参数异常!"),
-    /** 等待超时 */
-    SERVICE_TIME_OUT("103", "服务调用超时！"),
+    PARMETER_EXCEPTION("101", "参数异常!"),
     /** 参数过大 */
     PARMETER_BIG_EXCEPTION("102", "参数过大"),
+    /** 等待超时 */
+    SERVICE_TIME_OUT("103", "服务调用超时！"),
+    /** 用户名重复异常 */
+    USER_EXIST_EXCEPTION("104", "用户名重复异常!"),
+    /** 请求方式不支持 */
+    REQUEST_METHOD_NOT_SUPPORTED_EXCEPTION("302", "请求方式不支持!"),
+    /** 权限异常 */
+    Authentication_EXCEPTION("401", "账号权限不足"),
+    Authorization_EXCEPTION("403", "角色权限不足"),
     /** 500 : 发生异常 */
     UNEXPECTED_EXCEPTION("500", "系统发生异常，请联系管理员！"),
-    /** 500 : 发生异常 */
+    /** 666 : 测试用异常 */
     TEST_EXCEPTION("666", "测试用异常");
 
     /**
