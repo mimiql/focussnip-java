@@ -3,5 +3,5 @@ spring.datasource.username= your username
 spring.datasource.password= your password
 spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
 
-jwt.header=Authorization
-jwt.tokenHead=Bearer
+server.port=8080
+#server.servlet.context-path=/api

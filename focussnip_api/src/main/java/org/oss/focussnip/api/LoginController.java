@@ -23,7 +23,7 @@ public class LoginController {
     private UserService userService;
 
     @PostMapping("/doLogin")
-    public BaseResponse<JWTToken> login(@Valid @RequestBody UserLoginDto userLoginDto, BindingResult bindingResult) throws Exception {
+    public BaseResponse<JWTToken> login(@Valid @RequestBody UserLoginDto userLoginDto) throws Exception {
         // todo: 验证码
 
         Users user = userService.getByUsername(userLoginDto.getUsername());

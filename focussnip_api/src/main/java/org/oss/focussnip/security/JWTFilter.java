@@ -6,6 +6,7 @@ import org.oss.focussnip.common.BaseResponse;
 import org.oss.focussnip.exception.BusinessMsgEnum;
 import org.oss.focussnip.utils.Config;
 import org.apache.shiro.web.filter.authc.BasicHttpAuthenticationFilter;
+import org.oss.focussnip.utils.RedirectUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -102,7 +103,8 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
         try (PrintWriter out = httpResponse.getWriter()) {
 //            String responseJson = "{\"message\":\"" + message + "\"}";
             ObjectMapper mapper = new ObjectMapper();
-            String json = mapper.writeValueAsString(BaseResponse.getErrorResponse(BusinessMsgEnum.Authentication_EXCEPTION));
+            String json = mapper.writeValueAsString(BaseResponse.getErrorResponse(BusinessMsgEnum.Authentication_EXCEPTION)
+                    .setRedirect(RedirectUtil.getRedirectUrl("/doLogin")));
             out.print(json);
         } catch (IOException e) {
             LOGGER.error("sendChallenge error：", e);

@@ -1,13 +1,12 @@
 package org.oss.focussnip.common;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.oss.focussnip.exception.BusinessMsgEnum;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.context.request.RequestAttributes;
-import org.springframework.web.context.request.RequestContextHolder;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,8 +18,8 @@ public class BaseResponse<T> {
         return new BaseResponse<T>(0,data);
     }
 
-    public static<T> BaseResponse<T> getErrorResponse(String BusinessStatus, String BusinessMessage){
-        return new BaseResponse<T>(1, BusinessStatus, BusinessMessage);
+    public static<T> BaseResponse<T> getErrorResponse(String businessStatus, String businessMessage){
+        return new BaseResponse<T>(1, businessStatus, businessMessage);
     }
 
     public static<T> BaseResponse<T> getErrorResponse(BusinessMsgEnum businessMsgEnum){
@@ -39,21 +38,28 @@ public class BaseResponse<T> {
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private T data;
 
+    @JsonProperty
+    private String message;
+
+    @JsonIgnore
+    public static String REDIRECT = "redirect";
+
     private BaseResponse(int status,T data) {
         this.setStatus(status);
         this.setData(data);
+        this.setMessage(HttpStatus.OK.getReasonPhrase());
     }
 
-    private BaseResponse(int status,String BusinessStatus, String BusinessMessage) {
+    private BaseResponse(int status,String businessStatus, String businessMessage) {
         this.setStatus(status);
-        this.putExtra("code", BusinessStatus);
-        this.putExtra("message", BusinessMessage);
+        this.setMessage(businessMessage);
+        this.setBusinessInfo(businessStatus, businessMessage);
     }
 
     private BaseResponse(int status,BusinessMsgEnum businessMsgEnum) {
         this.setStatus(status);
-        this.putExtra("code", businessMsgEnum.code());
-        this.putExtra("message", businessMsgEnum.msg());
+        this.setMessage(businessMsgEnum.msg());
+        this.setBusinessInfo(businessMsgEnum);
     }
 
     private void setData(T data) {
@@ -64,27 +70,32 @@ public class BaseResponse<T> {
         this.status = status;
     }
 
+    private void setMessage(String message){
+        this.message = message;
+    }
+
+    public BaseResponse<T> setRedirect(String url){
+        this.putExtra(REDIRECT,url);
+        return this;
+    }
+
     @Data
     public class InnerBase {
         private String message;
-        private Integer status;
+        private String code;
         private Map<String, String> extra;
 
-        public void setStatus(HttpStatus status) {
-            this.setStatus(status.value());
+        public void setCode(HttpStatus status) {
+            this.setCode(String.valueOf(status.value()));
         }
 
-        public void setStatus(Integer status) {
-            this.status = status;
-            RequestAttributes request = RequestContextHolder.getRequestAttributes();
-            if (request != null) {
-                request.setAttribute("httpStatus", this.getStatus(), RequestAttributes.SCOPE_REQUEST);
-            }
+        public void setCode(String code) {
+            this.code = code;
         }
 
         public InnerBase() {
             this.setMessage(HttpStatus.OK.getReasonPhrase());
-            this.setStatus(HttpStatus.OK);
+            this.setCode(HttpStatus.OK);
             this.setExtra(new HashMap<>());
         }
     }
@@ -93,16 +104,17 @@ public class BaseResponse<T> {
     //@ApiModelProperty(hidden = true) // 暂时不显示这个字段, 看前端能不能在拦截器里处理
     private InnerBase base = new InnerBase();
 
-    public void setHttpMessage(String message) {
-        base.setMessage(message);
+    private void setBusinessInfo(BusinessMsgEnum businessMsg) {
+        base.setCode(businessMsg.code());
+        base.setMessage(businessMsg.msg());
     }
 
-    public void setHttpStatus(HttpStatus status) {
-        base.setStatus(status);
-        base.setMessage(status.getReasonPhrase());
+    private void setBusinessInfo(String code, String msg) {
+        base.setCode(code);
+        base.setMessage(msg);
     }
 
-    public void putExtra(String key, String value) {
+    private void putExtra(String key, String value) {
         base.getExtra().put(key, value);
     }
 }

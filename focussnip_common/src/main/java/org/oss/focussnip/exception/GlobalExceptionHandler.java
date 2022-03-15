@@ -5,11 +5,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindException;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+
+import java.util.List;
 
 @ControllerAdvice
 @ResponseBody
@@ -65,10 +70,24 @@ public class GlobalExceptionHandler {
 
     /**
      * 自定义验证异常
+     * @param e BindException
+     * @return
      */
     @ExceptionHandler(BindException.class)
     public BaseResponse handleBindException(BindException e) {
-        logger.error("参数验证错误：", e);
-        return BaseResponse.getErrorResponse(BusinessMsgEnum.PARMETER_EXCEPTION);
+        BindingResult result = e.getBindingResult();
+        StringBuilder stringBuilder = new StringBuilder("参数校验异常;");
+        if (result.hasErrors()) {
+            List<ObjectError> errors = result.getAllErrors();
+            if (errors.size()>0) {
+                errors.forEach(p -> {
+                    FieldError fieldError = (FieldError) p;
+                    logger.warn("Bad Request Parameters: dto entity [{}],field [{}],message [{}]",fieldError.getObjectName(), fieldError.getField(), fieldError.getDefaultMessage());
+                    stringBuilder.append(fieldError.getDefaultMessage());
+                    stringBuilder.append(";");
+                });
+            }
+        }
+        return BaseResponse.getErrorResponse(BusinessMsgEnum.PARMETER_EXCEPTION.code(),stringBuilder.toString());
     }
 }
