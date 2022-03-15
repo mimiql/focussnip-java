@@ -3,10 +3,13 @@ package org.oss.focussnip.common;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.annotations.ApiModel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.oss.focussnip.exception.BusinessMsgEnum;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -94,6 +97,12 @@ public class BaseResponse<T> {
         }
 
         public InnerBase() {
+            // 总是200，配合HttpStatusAdvice
+            RequestAttributes request = RequestContextHolder.getRequestAttributes();
+            if (request != null) {
+                request.setAttribute("httpStatus", 200, RequestAttributes.SCOPE_REQUEST);
+            }
+            // 设置内部消息方便调试，传递额外信息
             this.setMessage(HttpStatus.OK.getReasonPhrase());
             this.setCode(HttpStatus.OK);
             this.setExtra(new HashMap<>());

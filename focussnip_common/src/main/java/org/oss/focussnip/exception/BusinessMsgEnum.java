@@ -9,6 +9,10 @@ public enum BusinessMsgEnum {
     SERVICE_TIME_OUT("103", "服务调用超时！"),
     /** 用户名重复异常 */
     USER_EXIST_EXCEPTION("104", "用户名重复异常!"),
+    /** 用户名不存在 */
+    USER_NOT_EXIST_EXCEPTION("105", "用户名不存在!"),
+    /** 用户名不存在 */
+    USER_LOGIN_EXCEPTION("106", "用户名或密码错误!"),
     /** 请求方式不支持 */
     REQUEST_METHOD_NOT_SUPPORTED_EXCEPTION("302", "请求方式不支持!"),
     /** 权限异常 */
