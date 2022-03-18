@@ -1,6 +1,8 @@
 package org.oss.focussnip.service.impl;
 
 import org.oss.focussnip.constant.OssConstant;
+import org.oss.focussnip.exception.BusinessErrorException;
+import org.oss.focussnip.exception.BusinessMsgEnum;
 import org.oss.focussnip.service.OssService;
 
 
@@ -46,7 +48,7 @@ public class OssServiceImpl implements OssService {
             PutObjectResult result = client.putObject(bucketName, fileUrl,  new ByteArrayInputStream(file.getBytes()));
 
             if (result == null){
-                return null;
+                throw new BusinessErrorException(BusinessMsgEnum.FAILEDTOUPLOADFILE);
             }
             else {
                 return fileUrl;

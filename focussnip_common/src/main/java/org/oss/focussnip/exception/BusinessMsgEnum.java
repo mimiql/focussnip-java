@@ -21,7 +21,10 @@ public enum BusinessMsgEnum {
     /** 500 : 发生异常 */
     UNEXPECTED_EXCEPTION("500", "系统发生异常，请联系管理员！"),
     /** 666 : 测试用异常 */
-    TEST_EXCEPTION("666", "测试用异常");
+    TEST_EXCEPTION("666", "测试用异常"),
+
+    /**  上传文件失败 */
+    FAILEDTOUPLOADFILE("107", "上传文件失败!");
 
     /**
      * 消息码
