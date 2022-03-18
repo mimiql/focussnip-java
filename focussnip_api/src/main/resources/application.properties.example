@@ -8,7 +8,7 @@ server.port=8080
 
 
 #OSS
-endpoint=https://oss-cn-hangzhou.aliyuncs.com
+endpoint=https://focussnip.oss-cn-beijing.aliyuncs.com
 accessKeyId=LTAI4FckBwTXnPMvfPygrB5F
 accessKeySecret=my Secret
 bucketName=focussnip

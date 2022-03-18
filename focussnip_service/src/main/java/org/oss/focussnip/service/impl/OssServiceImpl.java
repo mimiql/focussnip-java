@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.UUID;
 
 @Service
 public class OssServiceImpl implements OssService {
@@ -40,7 +41,7 @@ public class OssServiceImpl implements OssService {
                 client.createBucket(createBucketRequest);
             }
             //设置文件路径及名称+ ("/" + UUID.randomUUID().toString().replace("-", "") + "-" )
-            String fileUrl = fileHost + "/" + file.getOriginalFilename();
+            String fileUrl = fileHost + "/" + UUID.randomUUID().toString().replace("-", "") + "-";
             //上传文件
             PutObjectResult result = client.putObject(bucketName, fileUrl,  new ByteArrayInputStream(file.getBytes()));
 
