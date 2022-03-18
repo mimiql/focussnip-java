@@ -5,3 +5,17 @@ spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
 
 server.port=8080
 #server.servlet.context-path=/api
+
+
+#OSS
+endpoint=https://oss-cn-hangzhou.aliyuncs.com
+accessKeyId=LTAI4FckBwTXnPMvfPygrB5F
+accessKeySecret=my Secret
+bucketName=focussnip
+filehost=files
+prefix=https://face-files-lqm.oss-cn-beijing.aliyuncs.com/
+
+spring.servlet.multipart.max-file-size=1000MB
+spring.servlet.multipart.max-request-size=1000MB
+
+spring.mvc.pathmatch.matching-strategy=ant_path_matcher
