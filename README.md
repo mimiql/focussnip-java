@@ -12,7 +12,7 @@
 
 > designed by zyk
 
-![image-20220319125912460](README.assets/image-20220319125912460.png)![image-20220319125946762](README.assets/image-20220319125946762.png)
+![logo1](README.assets/logo1.png)![logo2](README.assets/logo2.png)
 
 项目宣传语：
 
