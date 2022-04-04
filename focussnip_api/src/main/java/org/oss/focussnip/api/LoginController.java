@@ -4,6 +4,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import org.apache.shiro.SecurityUtils;
 import org.oss.focussnip.common.BaseResponse;
 import org.oss.focussnip.dto.UserLoginDto;
 import org.oss.focussnip.exception.BusinessErrorException;
@@ -61,11 +62,5 @@ public class LoginController {
         }
         // 参数异常
         throw new BusinessErrorException(BusinessMsgEnum.PARMETER_EXCEPTION);
-    }
-    @PostMapping("/user")
-    public BaseResponse<Users> user(@Valid @RequestBody UserLoginDto userLoginDto) throws Exception {
-        // todo: 验证码
-        Users user = userService.getByUsername(userLoginDto.getUsername());
-        return BaseResponse.getSuccessResponse(user);
     }
 }
