@@ -32,8 +32,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, Users> implements U
 
     @Override
     public Set<String> getPermissions(String username) {
-        List<String> roles = userMapper.getPermissions(username);
-        return new HashSet<>(roles);
+        List<String> permissions = userMapper.getPermissions(username);
+        return new HashSet<>(permissions);
     }
 
     @Override

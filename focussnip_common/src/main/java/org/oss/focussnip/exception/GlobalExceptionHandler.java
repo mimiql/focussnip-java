@@ -1,5 +1,6 @@
 package org.oss.focussnip.exception;
 
+import org.apache.shiro.authz.AuthorizationException;
 import org.oss.focussnip.common.BaseResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -89,5 +90,12 @@ public class GlobalExceptionHandler {
             }
         }
         return BaseResponse.getErrorResponse(BusinessMsgEnum.PARMETER_EXCEPTION.code(),stringBuilder.toString());
+    }
+
+    @ExceptionHandler(AuthorizationException.class)
+    public BaseResponse handleAuthorizationException(AuthorizationException e) {
+        logger.error("角色权限不足：{}", e.getMessage());
+        e.printStackTrace(System.out);
+        return BaseResponse.getErrorResponse(BusinessMsgEnum.Authorization_EXCEPTION);
     }
 }
