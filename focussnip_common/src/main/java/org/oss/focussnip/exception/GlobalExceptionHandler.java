@@ -14,8 +14,13 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @ControllerAdvice
 @ResponseBody
@@ -98,4 +103,22 @@ public class GlobalExceptionHandler {
         e.printStackTrace(System.out);
         return BaseResponse.getErrorResponse(BusinessMsgEnum.Authorization_EXCEPTION);
     }
+
+
+    /**
+     * 处理请求参数格式错误 @RequestParam上validate失败后抛出的异常是ConstraintViolationException
+     */
+    @ExceptionHandler(ConstraintViolationException.class)
+    public BaseResponse ConstraintViolationExceptionHandler(ConstraintViolationException e) {
+        String message = e.getConstraintViolations().stream().map(ConstraintViolation::getMessage).collect(Collectors.joining());
+        return BaseResponse.getErrorResponse(BusinessMsgEnum.PARMETER_EXCEPTION.code(),message);
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public BaseResponse<Object> mismatchErrorHandler(MethodArgumentTypeMismatchException e) {
+        logger.error("参数转换失败，方法：" + Objects.requireNonNull(e.getParameter().getMethod()).getName() + ",参数：" +
+                e.getName() + "，信息：" + e.getLocalizedMessage());
+        return BaseResponse.getErrorResponse(BusinessMsgEnum.PARMETER_EXCEPTION.code(),e.getMessage());
+    }
+
 }
