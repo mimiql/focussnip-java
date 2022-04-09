@@ -20,6 +20,8 @@ public class Goods {
     private LocalDateTime marketTime;
     private LocalDateTime holdTime;
     private int category;
+    private int starId;
+    private int status;
 
 
 }
