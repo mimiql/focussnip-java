@@ -6,9 +6,6 @@ import org.oss.focussnip.dto.GoodsQueryDto;
 import org.oss.focussnip.model.Goods;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 public interface GoodsService extends IService<Goods> {
@@ -25,5 +22,13 @@ public interface GoodsService extends IService<Goods> {
     Page<Goods> getGoodsByQuery(GoodsQueryDto goodsQueryDto);
 
     void insertGoodsFromCSV(MultipartFile file);
+
+    Goods downGoodsByGoodsId(String goodsId);
+
+    boolean downGoodsByStarId(String starId);
+
+    Goods upGoodsByGoodsId(String goodsId);
+
+    boolean upGoodsByStarId(String starId);
 
 }

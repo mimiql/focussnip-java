@@ -41,7 +41,7 @@ public class GoodsController {
 
     @ApiOperation("/根据GoodsID获取商品信息")
     @GetMapping("/goodsId")
-    public BaseResponse getGoodsById(@NotBlank(message = "goodsId不能为空") @RequestParam("goodsId") String goodsId){
+    public BaseResponse getGoodsByGoodsId(@NotBlank(message = "goodsId不能为空") @RequestParam("goodsId") String goodsId){
         Goods goods = goodsService.getGoodsByGoodsId(goodsId);
         return BaseResponse.getSuccessResponse(goods);
     }
@@ -89,4 +89,31 @@ public class GoodsController {
         return BaseResponse.getSuccessResponse(null);
     }
 
+    @ApiOperation("/根据GoodsID下架商品")
+    @DeleteMapping("/goodsId")
+    public BaseResponse downGoodsByGoodsId(@NotBlank(message = "goodsId不能为空") @RequestParam("goodsId") String goodsId){
+        Goods goods = goodsService.downGoodsByGoodsId(goodsId);
+        return BaseResponse.getSuccessResponse(goods);
+    }
+
+    @ApiOperation("/根据statId下架商品")
+    @DeleteMapping("/starId")
+    public BaseResponse dowmGoodsByStarId(@NotBlank(message = "starId不能为空") @RequestParam("starId") String starId){
+        boolean ans = goodsService.downGoodsByStarId(starId);
+        return BaseResponse.getSuccessResponse(ans);
+    }
+
+    @ApiOperation("/根据GoodsID上架商品")
+    @PutMapping("/goodsId")
+    public BaseResponse upGoodsByGoodsId(@NotBlank(message = "goodsId不能为空") @RequestParam("goodsId") String goodsId){
+        Goods goods = goodsService.upGoodsByGoodsId(goodsId);
+        return BaseResponse.getSuccessResponse(goods);
+    }
+
+    @ApiOperation("/根据statId上架商品")
+    @PutMapping("/starId")
+    public BaseResponse upGoodsByStarId(@NotBlank(message = "starId不能为空") @RequestParam("starId") String starId){
+        boolean ans = goodsService.upGoodsByStarId(starId);
+        return BaseResponse.getSuccessResponse(ans);
+    }
 }

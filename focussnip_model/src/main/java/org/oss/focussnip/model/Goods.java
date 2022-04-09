@@ -1,7 +1,6 @@
 package org.oss.focussnip.model;
 
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 import java.time.LocalDateTime;
 

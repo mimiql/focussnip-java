@@ -165,6 +165,56 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
 
     }
 
+    @Override
+    public Goods downGoodsByGoodsId(String goodsId) {
+        Goods goods = getGoodsByGoodsId(goodsId);
+        goods.setStatus(GoodsConstant.GOODS_STATUS_DOWN);
+        QueryWrapper<Goods> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("goods_id" , goodsId);
+        goodsMapper.update(goods,queryWrapper);
+        return goodsMapper.selectOne(queryWrapper);
+    }
+
+    @Override
+    public boolean downGoodsByStarId(String starId) {
+        QueryWrapper<Goods> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("star_id" , starId);
+        List<Goods> goodsList = goodsMapper.selectList(queryWrapper);
+
+        for (Goods goods : goodsList){
+            QueryWrapper<Goods> queryWrapper2 = new QueryWrapper<>();
+            goods.setStatus(GoodsConstant.GOODS_STATUS_DOWN);
+            queryWrapper2.eq("goods_id" , goods.getGoodsId());
+            goodsMapper.update(goods,queryWrapper2);
+        }
+        return true;
+    }
+
+    @Override
+    public Goods upGoodsByGoodsId(String goodsId) {
+        Goods goods = getGoodsByGoodsId(goodsId);
+        goods.setStatus(GoodsConstant.GOODS_STATUS_UP);
+        QueryWrapper<Goods> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("goods_id" , goodsId);
+        goodsMapper.update(goods,queryWrapper);
+        return goodsMapper.selectOne(queryWrapper);
+    }
+
+    @Override
+    public boolean upGoodsByStarId(String starId) {
+        QueryWrapper<Goods> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("star_id" , starId);
+        List<Goods> goodsList = goodsMapper.selectList(queryWrapper);
+
+        for (Goods goods : goodsList){
+            QueryWrapper<Goods> queryWrapper2 = new QueryWrapper<>();
+            goods.setStatus(GoodsConstant.GOODS_STATUS_UP);
+            queryWrapper2.eq("goods_id" , goods.getGoodsId());
+            goodsMapper.update(goods,queryWrapper2);
+        }
+        return true;
+    }
+
     private static File multipartFileToFile(MultipartFile file) throws Exception {
 
         File toFile = null;
