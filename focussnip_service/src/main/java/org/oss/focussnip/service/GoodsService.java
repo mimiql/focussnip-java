@@ -2,7 +2,7 @@ package org.oss.focussnip.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
-import org.oss.focussnip.dto.GoodsQueryDto;
+import org.oss.focussnip.dto.GoodsDto;
 import org.oss.focussnip.model.Goods;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,7 +19,7 @@ public interface GoodsService extends IService<Goods> {
 
     List<Goods> getGoodsByHoldTime(String holdTime);
 
-    Page<Goods> getGoodsByQuery(GoodsQueryDto goodsQueryDto);
+    Page<Goods> getGoodsByQuery(GoodsDto.GoodsQueryDto goodsQueryDto);
 
     void insertGoodsFromCSV(MultipartFile file);
 
@@ -30,5 +30,9 @@ public interface GoodsService extends IService<Goods> {
     Goods upGoodsByGoodsId(String goodsId);
 
     boolean upGoodsByStarId(String starId);
+
+    Goods addOneGoods(GoodsDto.GoodsAddDto goodsAddDto);
+
+    Goods updateOneGoods(GoodsDto.GoodsUpdateDto goodsUpdateDto);
 
 }

@@ -1,6 +1,11 @@
 package org.oss.focussnip.constant;
 
+import io.swagger.models.auth.In;
+
 public class GoodsConstant {
+    /** 商品ID长度 */
+    public static Integer GOODS_ID_LENGTH = 7;
+
     /** 商品上架状态 */
     public static Integer GOODS_STATUS_UP = 1;
 

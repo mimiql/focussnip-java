@@ -8,16 +8,19 @@ import de.siegmar.fastcsv.reader.CsvReader;
 import de.siegmar.fastcsv.reader.CsvRow;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.ibatis.jdbc.Null;
 import org.oss.focussnip.constant.GoodsConstant;
-import org.oss.focussnip.dto.GoodsQueryDto;
+import org.oss.focussnip.dto.GoodsDto;
 import org.oss.focussnip.mapper.GoodsMapper;
 import org.oss.focussnip.model.Goods;
 import org.oss.focussnip.service.GoodsService;
+import org.oss.focussnip.utils.RandomStringUtil;
 import org.oss.focussnip.utils.TimeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.xml.stream.events.DTD;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -69,7 +72,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
     }
 
     @Override
-    public Page<Goods> getGoodsByQuery(GoodsQueryDto goodsQueryDto) {
+    public Page<Goods> getGoodsByQuery(GoodsDto.GoodsQueryDto goodsQueryDto) {
         QueryWrapper<Goods> queryWrapper = new QueryWrapper<>();
 
         String goodsId = goodsQueryDto.getGoodsId();
@@ -213,6 +216,63 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
             goodsMapper.update(goods,queryWrapper2);
         }
         return true;
+    }
+
+    @Override
+    public Goods addOneGoods(GoodsDto.GoodsAddDto goodsAddDto) {
+        Goods goods = new Goods();
+        goods.setGoodsId(RandomStringUtil.getRandomString(GoodsConstant.GOODS_ID_LENGTH));
+        goods.setGoodsName(goodsAddDto.getGoodsName());
+        goods.setAddress(goodsAddDto.getAddress());
+        goods.setPicture(goodsAddDto.getPicture());
+        goods.setStock(goodsAddDto.getStock());
+        goods.setPrice(goodsAddDto.getPrice());
+        goods.setDescription(goodsAddDto.getDescription());
+        goods.setTip(goodsAddDto.getTip());
+
+        goods.setCreateTime(LocalDateTime.now());
+        goods.setUpdateTime(LocalDateTime.now());
+        goods.setMarketTime(TimeUtil.StringToLocalDateTime(goodsAddDto.getMarketTimeStr()));
+        goods.setHoldTime(TimeUtil.StringToLocalDateTime(goodsAddDto.getHoleTimeStr()));
+
+        goods.setCategory(goodsAddDto.getCategory());
+        goods.setStarId(goodsAddDto.getStarId());
+        goods.setStatus(goodsAddDto.getStatus());
+
+        goodsMapper.insert(goods);
+
+        QueryWrapper<Goods> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("goods_id" , goods.getGoodsId());
+        Goods goods1 = goodsMapper.selectOne(queryWrapper);
+        return goods1;
+    }
+
+    @Override
+    public Goods updateOneGoods(GoodsDto.GoodsUpdateDto goodsUpdateDto) {
+        QueryWrapper<Goods> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("goods_id" , goodsUpdateDto.getGoodsId());
+        Goods goods = goodsMapper.selectOne(queryWrapper);
+        if (goods == null){
+            return null;
+        }
+        goods.setGoodsName(goodsUpdateDto.getGoodsName());
+        goods.setAddress(goodsUpdateDto.getAddress());
+        goods.setPicture(goodsUpdateDto.getPicture());
+        goods.setStock(goodsUpdateDto.getStock());
+        goods.setPrice(goodsUpdateDto.getPrice());
+        goods.setDescription(goodsUpdateDto.getDescription());
+        goods.setTip(goodsUpdateDto.getTip());
+
+        goods.setUpdateTime(LocalDateTime.now());
+        goods.setMarketTime(TimeUtil.StringToLocalDateTime(goodsUpdateDto.getMarketTimeStr()));
+        goods.setHoldTime(TimeUtil.StringToLocalDateTime(goodsUpdateDto.getHoleTimeStr()));
+
+        goods.setCategory(goodsUpdateDto.getCategory());
+        goods.setStarId(goodsUpdateDto.getStarId());
+        goods.setStatus(goodsUpdateDto.getStatus());
+        goodsMapper.update(goods,queryWrapper);
+
+        return goods;
     }
 
     private static File multipartFileToFile(MultipartFile file) throws Exception {
