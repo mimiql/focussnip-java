@@ -23,6 +23,6 @@ public class Users extends BaseModel {
     private String password;
     private Integer starNum;
     private Long roleId;
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    private Long starId;
+//    @JsonInclude(JsonInclude.Include.NON_NULL)
+//    private Long starId;
 }
