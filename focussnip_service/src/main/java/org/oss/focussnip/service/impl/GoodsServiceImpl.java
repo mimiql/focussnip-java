@@ -305,4 +305,12 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
             e.printStackTrace();
         }
     }
+
+
+    @Override
+    public List<Goods> getGoodsByStarId(int starId) {
+        QueryWrapper<Goods> qw = new QueryWrapper<>();
+        qw.eq("star_id", starId);
+        return goodsMapper.selectList(qw);
+    }
 }

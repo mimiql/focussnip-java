@@ -35,4 +35,5 @@ public interface GoodsService extends IService<Goods> {
 
     Goods updateOneGoods(GoodsDto.GoodsUpdateDto goodsUpdateDto);
 
+    List<Goods> getGoodsByStarId(int starId);
 }
