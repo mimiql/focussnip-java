@@ -22,7 +22,7 @@ public class GoodsDto {
     @Range(min = 0, max = 4, message = "范围0-4")
     private int category = 0;
 
-    private int starId = -1;
+    private int starId = 0;
 
     private int status = 1;
 

@@ -41,35 +41,6 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
         return goodsMapper.selectOne(queryWrapper);
     }
 
-    @Override
-    public List<Goods> getGoodsByCategory(int category) {
-        QueryWrapper<Goods> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("category",category);
-        return goodsMapper.selectList(queryWrapper);
-    }
-
-    @Override
-    public List<Goods> getGoodsByAddress(String address) {
-        QueryWrapper<Goods> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("address",address);
-        return goodsMapper.selectList(queryWrapper);
-    }
-
-    @Override
-    public List<Goods> getGoodsByMarketTime(String marketTimeStr) {
-        LocalDateTime marketTime = TimeUtil.StringToLocalDateTime(marketTimeStr);
-        QueryWrapper<Goods> queryWrapper = new QueryWrapper<>();
-        queryWrapper.gt("market_time",marketTime);
-        return goodsMapper.selectList(queryWrapper);
-    }
-
-    @Override
-    public List<Goods> getGoodsByHoldTime(String holdTimeStr) {
-        LocalDateTime holdTime = TimeUtil.StringToLocalDateTime(holdTimeStr);
-        QueryWrapper<Goods> queryWrapper = new QueryWrapper<>();
-        queryWrapper.gt("hold_time",holdTime);
-        return goodsMapper.selectList(queryWrapper);
-    }
 
     @Override
     public Page<Goods> getGoodsByQuery(GoodsDto.GoodsQueryDto goodsQueryDto) {
