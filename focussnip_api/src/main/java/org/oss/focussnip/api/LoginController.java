@@ -1,9 +1,7 @@
 package org.oss.focussnip.api;
 
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.oss.focussnip.common.BaseResponse;
 import org.oss.focussnip.dto.UserLoginDto;
 import org.oss.focussnip.exception.BusinessErrorException;
@@ -14,6 +12,7 @@ import org.oss.focussnip.service.UserService;
 import org.oss.focussnip.utils.BCryptUtil;
 import org.oss.focussnip.utils.JWTUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,6 +21,7 @@ import javax.validation.Valid;
 
 @Api("登录注册，找回密码")
 @RestController
+@CrossOrigin(origins = "*")
 public class LoginController {
     @Autowired
     private UserService userService;
@@ -61,11 +61,5 @@ public class LoginController {
         }
         // 参数异常
         throw new BusinessErrorException(BusinessMsgEnum.PARMETER_EXCEPTION);
-    }
-    @PostMapping("/user")
-    public BaseResponse<Users> user(@Valid @RequestBody UserLoginDto userLoginDto) throws Exception {
-        // todo: 验证码
-        Users user = userService.getByUsername(userLoginDto.getUsername());
-        return BaseResponse.getSuccessResponse(user);
     }
 }

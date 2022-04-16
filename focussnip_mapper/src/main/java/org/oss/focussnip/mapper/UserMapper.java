@@ -21,4 +21,10 @@ public interface UserMapper extends BaseMapper<Users> {
             "LEFT JOIN permissions as p ON p.role_id = r.id " +
             "WHERE u.username = #{username}")
     List<String>getPermissions(String username);
+
+
+        @Select("SELECT us.star_id from users u " +
+                "left join user_star us on u.id=us.user_id " +
+                "where u.id=#{userId}")
+    List<Integer> getFollowStarId(int userId);
 }

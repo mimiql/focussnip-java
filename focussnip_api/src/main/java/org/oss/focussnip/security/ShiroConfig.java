@@ -61,6 +61,7 @@ public class ShiroConfig {
         filterRuleMap.put("/shiro/**", "jwt");
         filterRuleMap.put("/test/v2", "anon");
         filterRuleMap.put("/test/**", "jwt");
+        filterRuleMap.put("/user", "jwt");
         filterRuleMap.put("/shiro/auth/401", "anon");
         // 不拦截swagger
         filterRuleMap.put("/swagger*/**", "anon");

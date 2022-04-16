@@ -24,7 +24,7 @@ public class TestController {
     // RequiresAuthentication 必须经过过滤器 并已经成功登录
     @RequiresAuthentication
     // RequiresPermissions 必须经过过滤器 且有权限
-    @RequiresPermissions("admin")
+    @RequiresPermissions("admin:all:all")
     @GetMapping("/jsonres")
     public BaseResponse<Users> testJsonIgnoreAndRes(){
         return BaseResponse.getSuccessResponse(userService.test());

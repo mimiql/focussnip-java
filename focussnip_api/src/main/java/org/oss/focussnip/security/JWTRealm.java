@@ -1,5 +1,7 @@
 package org.oss.focussnip.security;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
@@ -36,16 +38,19 @@ public class JWTRealm extends AuthorizingRealm {
     /**
      * 只有当需要检测用户权限的时候才会调用此方法
      */
+    @SneakyThrows
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
-        String jwtToken = principals.toString();
-        String username = JWTUtil.getUsername(jwtToken);
+        String username = principals.toString();
 
         SimpleAuthorizationInfo authorizationInfo = new SimpleAuthorizationInfo();
         // 给该用户设置角色，角色信息存在 t_role 表中取
         authorizationInfo.setRoles(userService.getRoles(username));
+        ObjectMapper om = new ObjectMapper();
+        System.out.println(om.writeValueAsString(userService.getRoles(username)));
         // 给该用户设置权限，权限信息存在 t_permission 表中取
         authorizationInfo.setStringPermissions(userService.getPermissions(username));
+        System.out.println(om.writeValueAsString(userService.getPermissions(username)));
         return authorizationInfo;
     }
 
@@ -73,6 +78,6 @@ public class JWTRealm extends AuthorizingRealm {
             throw new AuthenticationException("token校验不通过");
         }
 
-        return new SimpleAuthenticationInfo(jwtToken, jwtToken, "jwtRealm");
+        return new SimpleAuthenticationInfo(username, jwtToken, "jwtRealm");
     }
 }
