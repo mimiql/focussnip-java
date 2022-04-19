@@ -15,6 +15,7 @@ import java.util.List;
 @Api("关注模块API")
 @RestController
 @RequestMapping("follow")
+@CrossOrigin(origins = "*")
 public class FollowController {
 
     @Autowired

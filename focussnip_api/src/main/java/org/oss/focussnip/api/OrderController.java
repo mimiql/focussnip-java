@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 @Api("订单api")
 @RestController
 @RequestMapping("order")
+@CrossOrigin(origins = "*")
 public class OrderController {
     @Autowired
     private OrderService orderService;

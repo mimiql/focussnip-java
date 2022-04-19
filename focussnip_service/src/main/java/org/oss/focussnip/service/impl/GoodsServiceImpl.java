@@ -116,7 +116,6 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
                 CsvRow csvData = csvRowList.get(row);
 
                 Goods goods = new Goods();
-                goods.setGoodsId(csvData.getField(0));
                 goods.setGoodsName(csvData.getField(1));
                 goods.setAddress(csvData.getField(2));
                 goods.setPicture(csvData.getField(3));

@@ -24,6 +24,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/goods")
 @Validated
+@CrossOrigin(origins = "*")
 public class GoodsController {
 
     @Autowired
