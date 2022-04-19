@@ -36,7 +36,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Orders findOrderById(String orderId) {
+    public Orders findOrderById(int orderId) {
         QueryWrapper<Orders> qw = new QueryWrapper<Orders>();
         qw.eq("order_id", orderId);
         return orderMapper.selectOne(qw);
