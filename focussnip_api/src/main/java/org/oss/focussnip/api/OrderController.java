@@ -7,7 +7,6 @@ import org.oss.focussnip.common.BaseResponse;
 import org.oss.focussnip.constant.OrderConstant;
 import org.oss.focussnip.model.Orders;
 import org.oss.focussnip.service.OrderService;
-import org.oss.focussnip.utils.OrderIdUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,8 +27,6 @@ public class OrderController {
     @ApiOperation("创建订单Api")
     @PostMapping("/create")
     public BaseResponse insertOrder(@RequestBody Orders order) {
-        order.setOrderId(OrderIdUtil.getOrderId());
-
         LocalDateTime localDateTime = LocalDateTime.now();
         order.setCreatedTime(localDateTime);
         order.setStatus(OrderConstant.ORDER_UNPAYED);
@@ -39,7 +36,7 @@ public class OrderController {
 
     @ApiOperation("付款api")
     @PostMapping("/pay")
-    public BaseResponse pay(@RequestParam("orderId") String orderId) {
+    public BaseResponse pay(@RequestParam("orderId") int orderId) {
         Orders order = orderService.findOrderById(orderId);
         order.setStatus(OrderConstant.ORDER_PAYED);
         order.setPayedTime(LocalDateTime.now());

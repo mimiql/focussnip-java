@@ -12,7 +12,7 @@ public interface OrderService {
 
     void deleteOrderByOrderId(int orderId);
 
-    Orders findOrderById(String orderId);
+    Orders findOrderById(int orderId);
 
     Page<Orders> findOrdersByUserId(int userId); // 查询用户的所有订单
 
