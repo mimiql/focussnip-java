@@ -6,7 +6,10 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.hibernate.validator.constraints.Range;
 import org.oss.focussnip.common.BaseResponse;
+import org.oss.focussnip.dto.GoodsAddDto;
 import org.oss.focussnip.dto.GoodsDto;
+import org.oss.focussnip.dto.GoodsQueryDto;
+import org.oss.focussnip.dto.GoodsUpdateDto;
 import org.oss.focussnip.model.Goods;
 import org.oss.focussnip.service.GoodsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +37,7 @@ public class GoodsController {
 
     @ApiOperation("/根据查询得到商品信息")
     @PostMapping("/query")
-    public BaseResponse getGoodsByQuery(@RequestBody @Valid GoodsDto.GoodsQueryDto goodsQueryDto){
+    public BaseResponse getGoodsByQuery(@RequestBody @Valid GoodsQueryDto goodsQueryDto){
         Page<Goods> goodsList = goodsService.getGoodsByQuery(goodsQueryDto);
         return BaseResponse.getSuccessResponse(goodsList);
     }
@@ -77,14 +80,14 @@ public class GoodsController {
 
     @ApiOperation("/明星增加单个商品")
     @PostMapping("/")
-    public BaseResponse AddOneGoods(@RequestBody GoodsDto.GoodsAddDto goodsAddDto){
+    public BaseResponse AddOneGoods(@RequestBody GoodsAddDto goodsAddDto){
         Goods goods = goodsService.addOneGoods(goodsAddDto);
         return BaseResponse.getSuccessResponse(goods);
     }
 
     @ApiOperation("/修改商品信息")
     @PutMapping("/")
-    public BaseResponse updateOneGoods(@RequestBody GoodsDto.GoodsUpdateDto goodsUpdateDto){
+    public BaseResponse updateOneGoods(@RequestBody GoodsUpdateDto goodsUpdateDto){
         Goods goods = goodsService.updateOneGoods(goodsUpdateDto);
         return BaseResponse.getSuccessResponse(goods);
     }

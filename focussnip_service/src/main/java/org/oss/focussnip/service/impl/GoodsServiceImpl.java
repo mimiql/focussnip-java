@@ -10,7 +10,10 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.jdbc.Null;
 import org.oss.focussnip.constant.GoodsConstant;
+import org.oss.focussnip.dto.GoodsAddDto;
 import org.oss.focussnip.dto.GoodsDto;
+import org.oss.focussnip.dto.GoodsQueryDto;
+import org.oss.focussnip.dto.GoodsUpdateDto;
 import org.oss.focussnip.mapper.GoodsMapper;
 import org.oss.focussnip.model.Goods;
 import org.oss.focussnip.service.GoodsService;
@@ -43,7 +46,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
 
 
     @Override
-    public Page<Goods> getGoodsByQuery(GoodsDto.GoodsQueryDto goodsQueryDto) {
+    public Page<Goods> getGoodsByQuery(GoodsQueryDto goodsQueryDto) {
         QueryWrapper<Goods> queryWrapper = new QueryWrapper<>();
 
         String goodsId = goodsQueryDto.getGoodsId();
@@ -189,7 +192,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
     }
 
     @Override
-    public Goods addOneGoods(GoodsDto.GoodsAddDto goodsAddDto) {
+    public Goods addOneGoods(GoodsAddDto goodsAddDto) {
         Goods goods = new Goods();
         goods.setGoodsId(RandomStringUtil.getRandomString(GoodsConstant.GOODS_ID_LENGTH));
         goods.setGoodsName(goodsAddDto.getGoodsName());
@@ -218,7 +221,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
     }
 
     @Override
-    public Goods updateOneGoods(GoodsDto.GoodsUpdateDto goodsUpdateDto) {
+    public Goods updateOneGoods(GoodsUpdateDto goodsUpdateDto) {
         QueryWrapper<Goods> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("goods_id" , goodsUpdateDto.getGoodsId());
         Goods goods = goodsMapper.selectOne(queryWrapper);
