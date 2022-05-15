@@ -21,6 +21,6 @@ public class Goods {
     private int category;
     private int starId;
     private int status;
-
+    private String detail;
 
 }

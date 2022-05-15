@@ -133,6 +133,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
                 goods.setCategory(Integer.parseInt(csvData.getField(12)));
                 goods.setStarId(Integer.parseInt(csvData.getField(13)));
                 goods.setStatus(GoodsConstant.GOODS_STATUS_UP);
+                goods.setDetail(csvData.getField(14));
                 this.save(goods);
             }
         } catch (Exception e) {
