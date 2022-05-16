@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -25,8 +26,12 @@ public class FollowServiceImpl implements FollowService {
     private GoodsService goodsService;
 
     @Override
-    public List<Users> getFollowStars(int userId) {
-        List<Integer> starsId = userMapper.getFollowStarId(userId);
+    public List<Users> getFollowStars(String username) {
+        List<Integer> starsId = userMapper.getFollowStarId(username);
+        starsId.removeAll(Collections.singleton(null));
+        if (starsId.isEmpty()) {
+            return null;
+        }
         List<Users> stars = new ArrayList<>();
 
         for (Integer star : starsId) {
@@ -39,20 +44,25 @@ public class FollowServiceImpl implements FollowService {
     }
 
     @Override
-    public List<Integer> getFollowStarsId(int userId) {
-        return userMapper.getFollowStarId(userId);
+    public List<Integer> getFollowStarsId(String username) {
+        return userMapper.getFollowStarId(username);
     }
 
     @Override
-    public Users getUserById(int userId) {
+    public Users getUserById(String username) {
         QueryWrapper<Users> qw = new QueryWrapper<>();
-        qw.eq("id", userId);
+        qw.eq("username", username);
         return userMapper.selectOne(qw);
     }
 
     @Override
-    public List<Goods> getFollowGoods(int userId) {
-        List<Integer> followStarId = userMapper.getFollowStarId(userId);
+    public List<Goods> getFollowGoods(String username) {
+        // 如果查询不到，会返回一个元素为null的list
+        List<Integer> followStarId = userMapper.getFollowStarId(username);
+        followStarId.removeAll(Collections.singleton(null)); // 移除集合中所有的null值
+        if (followStarId.isEmpty()) {
+            return null;
+        }
         List<Goods> goods = new ArrayList<>();
         for (Integer starId : followStarId) {
             List<Goods> goodsByStarId = goodsService.getGoodsByStarId(starId);
@@ -62,14 +72,13 @@ public class FollowServiceImpl implements FollowService {
     }
 
     @Override
-    public void followStar(int userId, int starId) {
-        followMapper.insert(userId, starId);
+    public void followStar(String username, int starId) {
+        followMapper.insert(username, starId);
     }
 
     @Override
-    public void unfollowStar(int userId, int starId) {
-        followMapper.delete(userId, starId);
+    public void unfollowStar(String username, int starId) {
+        followMapper.delete(username, starId);
     }
-
 
 }

@@ -7,9 +7,9 @@ import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
 public interface FollowMapper extends BaseMapper {
-    @Insert("INSERT into user_star (user_id, star_id) values (#{userId}, #{starId})")
-    void insert(int userId, int starId); // 插入 用户-明星 关系
+    @Insert("INSERT into user_star (username, star_id) values (#{username}, #{starId})")
+    void insert(String username, int starId); // 插入 用户-明星 关系
 
-    @Delete("DELETE from user_star where user_id=#{userId} and star_id=#{starId}")
-    void delete(int userId, int starId);
+    @Delete("DELETE from user_star where username=#{username} and star_id=#{starId}")
+    void delete(String username, int starId);
 }

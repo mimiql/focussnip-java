@@ -24,7 +24,7 @@ public interface UserMapper extends BaseMapper<Users> {
 
 
         @Select("SELECT us.star_id from users u " +
-                "left join user_star us on u.id=us.user_id " +
-                "where u.id=#{userId}")
-    List<Integer> getFollowStarId(int userId);
+                "left join user_star us on u.username=us.username " +
+                "where u.username=#{username}")
+    List<Integer> getFollowStarId(String username);
 }

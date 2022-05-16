@@ -6,15 +6,15 @@ import org.oss.focussnip.model.Users;
 import java.util.List;
 
 public interface FollowService {
-    List<Users> getFollowStars(int userId);
+    List<Users> getFollowStars(String username);
 
-    List<Integer> getFollowStarsId(int userId);
+    List<Integer> getFollowStarsId(String username);
 
-    Users getUserById(int userId);
+    Users getUserById(String username);
 
-    List<Goods> getFollowGoods(int userId);
+    List<Goods> getFollowGoods(String username);
 
-    void followStar(int userId, int starId);
+    void followStar(String username, int starId);
 
-    void unfollowStar(int userId, int starId);//取关
+    void unfollowStar(String username, int starId);//取关
 }
