@@ -14,7 +14,7 @@ public interface OrderService {
 
     Orders findOrderById(int orderId);
 
-    Page<Orders> findOrdersByUserId(int userId); // 查询用户的所有订单
+    Page<Orders> findOrdersByUsername(String userName); // 查询用户的所有订单
 
-    Page<Orders> findOrdersByDecriptionLike(int userId, String key); // 根据关键字模糊查询用户订单
+    Page<Orders> findOrdersByDecriptionLike(String username, String key); // 根据关键字模糊查询用户订单
 }

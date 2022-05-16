@@ -43,16 +43,16 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Page<Orders> findOrdersByUserId(int userId) {
+    public Page<Orders> findOrdersByUsername(String username) {
         QueryWrapper<Orders> qw = new QueryWrapper<Orders>();
-        qw.eq("user_id", userId); // (当前页，每页显示多少条数据)
+        qw.eq("username", username); // (当前页，每页显示多少条数据)
         return orderMapper.selectPage(new Page(1, 10), qw);
     }
 
     @Override
-    public Page<Orders> findOrdersByDecriptionLike(int userId, String key) {
+    public Page<Orders> findOrdersByDecriptionLike(String username, String key) {
         QueryWrapper<Orders> qw = new QueryWrapper<Orders>();
-        qw.eq("user_id", userId);
+        qw.eq("username", username);
         qw.like("description", key);
         return orderMapper.selectPage(new Page<>(1, 10), qw);
     }

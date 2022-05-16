@@ -11,5 +11,6 @@ public class Orders {
     private LocalDateTime createdTime;
     private LocalDateTime payedTime;
     private int status; // 订单状态
-    private int userId;
+    private String username;
+    private String goodsId;
 }
