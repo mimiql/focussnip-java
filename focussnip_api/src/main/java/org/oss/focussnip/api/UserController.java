@@ -3,6 +3,7 @@ package org.oss.focussnip.api;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.oss.focussnip.common.BaseResponse;
 import org.oss.focussnip.dto.ModifyPasswordDto;
@@ -62,7 +63,7 @@ public class UserController {
     @PutMapping("/password")
     public BaseResponse modifyPassword(@Valid @RequestBody ModifyPasswordDto modifyPasswordDto) throws Exception {
         Users user = userService.getByUsername(modifyPasswordDto.getUsername());
-        if (!user.getPhone().equals(modifyPasswordDto.getPhone())){
+        if (StringUtils.isBlank(user.getPhone()) || !user.getPhone().equals(modifyPasswordDto.getPhone())){
             throw new BusinessErrorException(BusinessMsgEnum.PHONEVERIFICATIONERROR);
         }
         user.setPassword(BCryptUtil.EncodePassword(modifyPasswordDto.getNewPassword()));
