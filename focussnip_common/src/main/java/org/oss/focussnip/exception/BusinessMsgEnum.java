@@ -24,7 +24,14 @@ public enum BusinessMsgEnum {
     TEST_EXCEPTION("666", "测试用异常"),
 
     /**  上传文件失败 */
-    FAILEDTOUPLOADFILE("107", "上传文件失败!");
+    FAILEDTOUPLOADFILE("107", "上传文件失败!"),
+
+    /** 手机验证错误 */
+    PHONEVERIFICATIONERROR("108" , "手机验证错误"),
+
+    /** 密码重置失败 */
+    PASSWORDRESETFAILED("109" , "密码重置失败,请重试");
+
 
     /**
      * 消息码

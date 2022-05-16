@@ -37,7 +37,7 @@ public class LoginController {
         }
         if(BCryptUtil.matchesPassword(userLoginDto.getPassword(),user.getPassword())){
             String token = JWTUtil.generTokenByRS256(userLoginDto.getUsername());
-            JWTToken jwtToken = new JWTToken(token);
+            JWTToken jwtToken = new JWTToken(token , userLoginDto.getUsername());
             return BaseResponse.getSuccessResponse(jwtToken);
         }
         // 参数异常
@@ -54,9 +54,10 @@ public class LoginController {
         user = new Users();
         user.setUsername(userLoginDto.getUsername());
         user.setPassword(BCryptUtil.EncodePassword(userLoginDto.getPassword()));
+        user.setPassword(userLoginDto.getPhone());
         if(userService.save(user)){
             String token = JWTUtil.generTokenByRS256(userLoginDto.getUsername());
-            JWTToken jwtToken = new JWTToken(token);
+            JWTToken jwtToken = new JWTToken(token , userLoginDto.getUsername());
             return BaseResponse.getSuccessResponse(jwtToken);
         }
         // 参数异常

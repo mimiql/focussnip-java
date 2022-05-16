@@ -10,10 +10,16 @@ public class JWTToken implements AuthenticationToken {
 
     // 密钥
     private String token;
+    private String username;
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private Long expireAt;
 
-    public JWTToken(String token) {
+    public JWTToken(String token , String username) {
+        this.token = token;
+        this.username = username;
+    }
+
+    public JWTToken(String token ) {
         this.token = token;
     }
 

@@ -25,4 +25,5 @@ public class Users extends BaseModel {
     private Long roleId;
 //    @JsonInclude(JsonInclude.Include.NON_NULL)
 //    private Long starId;
+    private String phone;
 }
