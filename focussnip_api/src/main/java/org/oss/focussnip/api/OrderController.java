@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 @RequiresPermissions("admin:all")
 @Api("订单api")
 @RestController
-@RequestMapping("order")
+@RequestMapping("/order")
 @CrossOrigin(origins = "*")
 public class OrderController {
     @Autowired
