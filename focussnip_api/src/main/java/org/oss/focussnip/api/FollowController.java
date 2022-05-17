@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RequiresPermissions("admin:all")
+@RequiresPermissions("user:all")
 @Api("关注模块API")
 @RestController
 @RequestMapping("follow")
