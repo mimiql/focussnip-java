@@ -19,4 +19,6 @@ public class UserLoginDto {
     private String password;
 
     private String phone;
+
+    private Long roleId;
 }

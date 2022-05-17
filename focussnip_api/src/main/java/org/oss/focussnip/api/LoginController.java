@@ -55,6 +55,7 @@ public class LoginController {
         user.setUsername(userLoginDto.getUsername());
         user.setPassword(BCryptUtil.EncodePassword(userLoginDto.getPassword()));
         user.setPhone(userLoginDto.getPhone());
+        user.setRoleId(userLoginDto.getRoleId());
         if(userService.save(user)){
             String token = JWTUtil.generTokenByRS256(userLoginDto.getUsername());
             JWTToken jwtToken = new JWTToken(token , userLoginDto.getUsername());
