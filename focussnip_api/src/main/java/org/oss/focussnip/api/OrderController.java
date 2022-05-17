@@ -30,14 +30,14 @@ public class OrderController {
 
     /**
      * 先创建订单，再付款（付款是请求另一个url）
-     * @param goodId
+     * @param goodsId
      * @return
      */
     @ApiOperation("创建订单Api")
     @PostMapping("/create")
-    public BaseResponse insertOrder(@RequestParam String goodId) {
+    public BaseResponse insertOrder(@RequestParam String goodsId) {
         String username = (String) SecurityUtils.getSubject().getPrincipal();
-        Goods goods = goodsService.getGoodsByGoodsId(goodId);
+        Goods goods = goodsService.getGoodsByGoodsId(goodsId);
 
         Orders order = new Orders();
         order.setUsername(username);
@@ -45,14 +45,18 @@ public class OrderController {
         order.setCreatedTime(localDateTime);
         order.setStatus(OrderConstant.ORDER_UNPAYED);
         order.setDescription(goods.getDescription());
-        order.setGoodsId(goodId);
+        order.setPrice(goods.getPrice());
+        order.setGoodsId(goodsId);
         orderService.insertOrder(order);
+
+        Long orderId = order.getOrderId();
+        order = orderService.findOrderById(orderId);
         return BaseResponse.getSuccessResponse(order);
     }
 
     @ApiOperation("付款api")
     @PostMapping("/pay")
-    public BaseResponse pay(@RequestParam("orderId") int orderId) {
+    public BaseResponse pay(@RequestParam("orderId") Long orderId) {
         Orders order = orderService.findOrderById(orderId);
         order.setStatus(OrderConstant.ORDER_PAYED);
         order.setPayedTime(LocalDateTime.now());
@@ -79,7 +83,7 @@ public class OrderController {
 
     @ApiOperation("根据Id删除订单")
     @DeleteMapping("deleteByOrderId")
-    public BaseResponse deleteByOrderId(@RequestParam("orderId") int orderId) {
+    public BaseResponse deleteByOrderId(@RequestParam("orderId") Long orderId) {
         orderService.deleteOrderByOrderId(orderId);
         return BaseResponse.getSuccessResponse(null);
     }

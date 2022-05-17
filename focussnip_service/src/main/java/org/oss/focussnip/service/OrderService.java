@@ -10,9 +10,9 @@ public interface OrderService {
 
     int updateOrder(Orders order);
 
-    void deleteOrderByOrderId(int orderId);
+    void deleteOrderByOrderId(Long orderId);
 
-    Orders findOrderById(int orderId);
+    Orders findOrderById(Long orderId);
 
     Page<Orders> findOrdersByUsername(String userName); // 查询用户的所有订单
 

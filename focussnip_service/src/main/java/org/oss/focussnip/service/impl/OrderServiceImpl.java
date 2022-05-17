@@ -29,14 +29,14 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void deleteOrderByOrderId(int orderId) {
+    public void deleteOrderByOrderId(Long orderId) {
         QueryWrapper<Orders> qw = new QueryWrapper<>();
         qw.eq("order_id", orderId);
         orderMapper.delete(qw);
     }
 
     @Override
-    public Orders findOrderById(int orderId) {
+    public Orders findOrderById(Long orderId) {
         QueryWrapper<Orders> qw = new QueryWrapper<Orders>();
         qw.eq("order_id", orderId);
         return orderMapper.selectOne(qw);
