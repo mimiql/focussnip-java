@@ -6,12 +6,15 @@ import sun.misc.BASE64Encoder;
 import java.security.Key;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
+import java.security.SecureRandom;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 
 public class SecretKeyUtil {
 
     public static final String KEY_ALGORITHM = "RSA";
+
+    public static final String seedStr = "seedStr";
 
     private static RSA256Key rsa256Key;
 
@@ -48,7 +51,7 @@ public class SecretKeyUtil {
         /* RSA算法要求有一个可信任的随机数源 */
         //获得对象 KeyPairGenerator 参数 RSA 256个字节
         KeyPairGenerator keyPairGen = KeyPairGenerator.getInstance(KEY_ALGORITHM);
-        keyPairGen.initialize(512);
+        keyPairGen.initialize(512, new SecureRandom(seedStr.getBytes()));
 
         //通过对象 KeyPairGenerator 生成密匙对 KeyPair
         KeyPair keyPair = keyPairGen.generateKeyPair();
