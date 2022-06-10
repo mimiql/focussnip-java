@@ -1,7 +1,10 @@
 package org.oss.focussnip.utils;
 
+import org.oss.focussnip.exception.BusinessErrorException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.data.redis.core.HashOperations;
+import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.data.redis.support.atomic.RedisAtomicLong;
@@ -21,7 +24,7 @@ public class RedisUtil<K,V> {
         hash.put(hashK,k,v);
     }
 
-    public V getHash(String hashK,K k,V forType){
+    public V getHash(String hashK,K k){
         HashOperations<String, K, V> hash = redisTemplate.opsForHash();
         return hash.get(hashK,k);
     }
@@ -31,13 +34,13 @@ public class RedisUtil<K,V> {
         return hash.delete(hashK,k);
     }
 
-    public void putValue(String k, V v){
-        ValueOperations<String, V> valueOps = redisTemplate.opsForValue();
+    public void putValue(String k, Integer v){
+        ValueOperations<String, Integer> valueOps = redisTemplate.opsForValue();
         valueOps.set(k,v);
     }
 
-    public V getValue(String k,V forType){
-        ValueOperations<String, V> valueOps = redisTemplate.opsForValue();
+    public Integer getValue(String k){
+        ValueOperations<String, Integer> valueOps = redisTemplate.opsForValue();
         return valueOps.get(k);
     }
 
@@ -79,5 +82,19 @@ public class RedisUtil<K,V> {
             entityIdCounter.expire(liveTime, TimeUnit.SECONDS);
         }
         return increment;
+    }
+
+    public void putinList(String key, V... v){
+        ListOperations<String,V> listOperations = redisTemplate.opsForList();
+        listOperations.rightPushAll(key,v);
+    }
+
+    public List<V> getList(String key){
+        ListOperations<String,V> listOperations = redisTemplate.opsForList();
+        Long size = listOperations.size(key);
+        if (null!=size){
+            return listOperations.leftPop(key,size);
+        }
+        throw new NullPointerException();
     }
 }

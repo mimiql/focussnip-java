@@ -1,14 +1,17 @@
 package org.oss.focussnip.api;
 
 import com.alipay.api.response.AlipayTradeQueryResponse;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.oss.focussnip.common.BaseResponse;
 import org.oss.focussnip.model.SnapGoods;
 import org.oss.focussnip.service.AlipayService;
 import org.oss.focussnip.service.SnapService;
+import org.oss.focussnip.utils.RedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 @RestController
@@ -17,33 +20,39 @@ public class SnapController {
     private SnapService snapService;
     @Autowired
     private AlipayService alipayService;
-    @Autowired
-    private
+    @Resource
+    private RedisUtil<String,SnapGoods> redisUtil;
 
     @PostMapping("/snap/init")
     public BaseResponse<String> initSnap(){
-        snapService.initSnap();
+        List<SnapGoods> snapGoodsList = snapService.initSnap();
 
-        // todo: 进redis
+        for(SnapGoods it : snapGoodsList){
+            String idStr = String.valueOf(it.getId());
+            redisUtil.putinList("snapList",it);
+            redisUtil.putHash("snap",idStr,it);
+            redisUtil.putValue("snap."+idStr+".stock", it.getStock());
+        }
+
         return BaseResponse.getSuccessResponse("成功初始化snap");
     }
 
     @GetMapping("/snap")
     public BaseResponse<List<SnapGoods>> getSnapList(){
-        List<SnapGoods> snapGoodList = snapService.list();
+        List<SnapGoods> snapGoodList = redisUtil.getList("snapList");
         return BaseResponse.getSuccessResponse(snapGoodList);
     }
 
     @GetMapping("/snap/get/{id}")
     public BaseResponse<SnapGoods> getSnap(@PathVariable Long id){
-        SnapGoods snap = snapService.getById(id);
+        SnapGoods snap = redisUtil.getHash("snap",String.valueOf(id));
         return BaseResponse.getSuccessResponse(snap);
     }
 
     @PostMapping("/snap/join")
     @RequiresAuthentication
     public BaseResponse<String> joinSnap(@RequestHeader("Authorization") String token){
-        // todo: 进redis
+        redisUtil.putValue("snap.token."+token, 0);
         return BaseResponse.getSuccessResponse("成功参与抢购");
     }
 
