@@ -35,8 +35,8 @@ public class RabbitmqConfig {
     @Bean("snapQueue")
     public Queue getFirstQueue(){
         Map<String, Object> args = new HashMap<String, Object>();
-        args.put("x-message-ttl",6000); // 设置超时
-        Queue queue = new Queue("FIRST_QUEUE", false, false, true, args);
+        args.put("x-message-ttl",60000); // 设置超时
+        Queue queue = new Queue("SNAP_QUEUE", false, false, true, args);
         return queue;
     }
 

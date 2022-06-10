@@ -60,6 +60,7 @@ public class RedisUtil<K,V> {
             int stock = valueOps.get(k);
             // 判断是否有库存
             if(stock<1){
+                redisTemplate.unwatch();
                 break;
             }
             valueOps.decrement(k,1);

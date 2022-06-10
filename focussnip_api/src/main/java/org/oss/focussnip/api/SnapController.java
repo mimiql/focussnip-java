@@ -7,12 +7,16 @@ import org.oss.focussnip.common.BaseResponse;
 import org.oss.focussnip.model.SnapGoods;
 import org.oss.focussnip.service.AlipayService;
 import org.oss.focussnip.service.SnapService;
+import org.oss.focussnip.utils.JWTUtil;
 import org.oss.focussnip.utils.RedisUtil;
+import org.springframework.amqp.rabbit.annotation.RabbitHandler;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -59,23 +63,44 @@ public class SnapController {
         return BaseResponse.getSuccessResponse("成功参与抢购");
     }
 
-    @GetMapping("/snap/buy/{id}")
-    public BaseResponse<String> buySnap(@PathVariable Long id){
-        rabbitTemplate.convertAndSend("","");
-        // todo: MQ长度验证
-        // todo: 入MQ
+    @PostMapping("/snap/buy/{id}")
+    public BaseResponse<String> buySnap(@RequestHeader("Authorization") String token, @PathVariable Long id){
+        rabbitTemplate.convertAndSend("DIRCET_EXCHANGE","snapOrder",token+"："+String.valueOf(id));
         return BaseResponse.getSuccessResponse("成功参与抢购");
     }
 
-    public BaseResponse<String> checkAndCreateSnap(){
-        // todo: 出MQ
-        // todo: 抢购过期
-        // todo: 库存
-        // todo: 鉴权
+    @RabbitListener(queues = "SNAP_QUEUE")
+    @RabbitHandler
+    public void checkAndCreateSnap(String msg){
+        String[] strList = StringUtils.split(msg,'：');
+        String token = strList[0];
+        String idStr = strList[1];
+        long id = Long.parseLong(idStr);
+        SnapGoods snapGoods = redisUtil.getHash("snap",idStr);
+
+        if(timeCheck(snapGoods.getEndTime()) || stockCheck(idStr) || tokenCheck(token) || check){
+            //不符合要求
+            redisUtil.putValue(token+".order",-1);
+            return;
+        }
+
         // todo: 重复消费
         // todo: 生成订单
         // todo: 订单入redis
-        return BaseResponse.getSuccessResponse("成功参与抢购");
+    }
+
+    private boolean timeCheck(LocalDateTime localDateTime){
+        return (LocalDateTime.now().compareTo(localDateTime)>0);
+    }
+
+    private boolean stockCheck(String idStr){
+        return (redisUtil.getValue("snap."+idStr+".stock")<1);
+    }
+
+    private boolean tokenCheck(String token){
+        if (null == redisUtil.getValue("snap.token."+token)) return true;
+        JWTUtil.getUsername(token);
+        return false;
     }
 
     @GetMapping("/snip/check")
@@ -108,10 +133,9 @@ public class SnapController {
     public BaseResponse<String> cancelPay(@PathVariable Long Id) throws Exception{
         // todo: 回滚库存
         if(true){
-            // todo: 订单状态已废弃            return BaseResponse.getSuccessResponse("支付成功");
+            // todo: 订单状态已废弃
+            return BaseResponse.getSuccessResponse("支付成功");
         }
         return BaseResponse.getErrorResponse("000","支付未完成");
     }
-
-
 }

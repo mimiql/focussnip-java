@@ -19,3 +19,14 @@ spring.servlet.multipart.max-file-size=1000MB
 spring.servlet.multipart.max-request-size=1000MB
 
 spring.mvc.pathmatch.matching-strategy=ant_path_matcher
+
+spring.rabbitmq.host=host
+spring.rabbitmq.port=port
+spring.rabbitmq.username=user
+spring.rabbitmq.password=pswd
+spring.rabbitmq.virtual-host=/
+spring.rabbitmq.publisher-confirm-type=correlated
+#可以确保消息在未被队列接收时返回，通常会和mandatory属性配合一起使用
+spring.rabbitmq.publisher-returns=true
+#指定消息在没有被队列接收时是否强行退回还是直接丢弃
+spring.rabbitmq.template.mandatory=true
