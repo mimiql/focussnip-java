@@ -8,6 +8,7 @@ import org.oss.focussnip.model.SnapGoods;
 import org.oss.focussnip.service.AlipayService;
 import org.oss.focussnip.service.SnapService;
 import org.oss.focussnip.utils.RedisUtil;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,6 +23,8 @@ public class SnapController {
     private AlipayService alipayService;
     @Resource
     private RedisUtil<String,SnapGoods> redisUtil;
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
 
     @PostMapping("/snap/init")
     public BaseResponse<String> initSnap(){
@@ -58,6 +61,7 @@ public class SnapController {
 
     @GetMapping("/snap/buy/{id}")
     public BaseResponse<String> buySnap(@PathVariable Long id){
+        rabbitTemplate.convertAndSend("","");
         // todo: MQ长度验证
         // todo: 入MQ
         return BaseResponse.getSuccessResponse("成功参与抢购");
@@ -103,9 +107,8 @@ public class SnapController {
     @PostMapping("/snip/cancel/{Id}")
     public BaseResponse<String> cancelPay(@PathVariable Long Id) throws Exception{
         // todo: 回滚库存
-        if(回归成功){
-            // todo: 订单状态已废弃
-            return BaseResponse.getSuccessResponse("支付成功");
+        if(true){
+            // todo: 订单状态已废弃            return BaseResponse.getSuccessResponse("支付成功");
         }
         return BaseResponse.getErrorResponse("000","支付未完成");
     }
