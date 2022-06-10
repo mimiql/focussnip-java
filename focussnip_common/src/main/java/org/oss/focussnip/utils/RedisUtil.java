@@ -56,9 +56,10 @@ public class RedisUtil<K,V> {
             ValueOperations<String, Integer> valueOps = redisTemplate.opsForValue();
             int stock = valueOps.get(k);
             // 判断是否有库存
-            if(stock>0){
-                valueOps.decrement(k,1);
+            if(stock<1){
+                break;
             }
+            valueOps.decrement(k,1);
             List exec = redisTemplate.exec();
             if(exec.size()!=0){
                 flag = true;
