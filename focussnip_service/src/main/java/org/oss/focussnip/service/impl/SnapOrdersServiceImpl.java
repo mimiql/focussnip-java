@@ -7,6 +7,7 @@ import org.oss.focussnip.mapper.SnapOrdersMapper;
 import org.oss.focussnip.model.SnapGoods;
 import org.oss.focussnip.model.SnapOrders;
 import org.oss.focussnip.service.SnapOrderService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,6 +17,9 @@ import java.util.List;
 @Transactional
 public class SnapOrdersServiceImpl extends ServiceImpl<SnapOrdersMapper, SnapOrders> implements SnapOrderService {
 
+    @Autowired
+    private SnapOrdersMapper snapOrdersMapper;
+
     @Override
     public Integer createOrder(SnapGoods snapGoods, String username) {
         SnapOrders snapOrders = new SnapOrders();
@@ -24,26 +28,17 @@ public class SnapOrdersServiceImpl extends ServiceImpl<SnapOrdersMapper, SnapOrd
         snapOrders.setPrice(snapGoods.getPrice());
         snapOrders.setDescription(snapGoods.getDescription());
         snapOrders.setStatus(OrderConstant.ORDER_UNPAYED);
-        if(this.save(snapOrders)){
-            Long id = snapOrders.getId();
-            QueryWrapper<SnapOrders> qw = new QueryWrapper<>();
-            qw.eq("id",id);
-            qw.eq("username",username);
-            qw.eq("status",OrderConstant.ORDER_UNPAYED);
-            // 重复就会报错,事务回滚
-            this.getOne(qw);
-            return id.intValue();
+        int lines = snapOrdersMapper.insert(snapOrders);
+        if(lines!=1){
+            return null;
         }
-        return null;
-    }
-
-    @Override
-    public SnapOrders getBySnapIdAndUsername(Long id, String username) {
         QueryWrapper<SnapOrders> qw = new QueryWrapper<>();
-        qw.eq("id",id);
+        qw.eq("snap_id",snapGoods.getId());
         qw.eq("username",username);
         qw.eq("status",OrderConstant.ORDER_UNPAYED);
-        return this.getOne(qw);
+        // 重复就会报错,事务回滚
+        this.getOne(qw);
+        return snapOrders.getId().intValue();
     }
 
     @Override

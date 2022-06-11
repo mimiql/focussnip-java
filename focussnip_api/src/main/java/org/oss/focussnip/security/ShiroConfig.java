@@ -64,7 +64,7 @@ public class ShiroConfig {
         filterRuleMap.put("/user", "jwt");
         filterRuleMap.put("/order/**", "jwt");
         filterRuleMap.put("/snap/join", "jwt");
-        filterRuleMap.put("/snap/check/**", "jwt");
+        filterRuleMap.put("/snap/check", "jwt");
         filterRuleMap.put("/follow/**", "jwt");
         filterRuleMap.put("/shiro/auth/401", "anon");
         // 不拦截swagger

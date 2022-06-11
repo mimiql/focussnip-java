@@ -1,11 +1,12 @@
 package org.oss.focussnip;
 
 import org.junit.jupiter.api.Test;
-import org.oss.focussnip.mapper.UserMapper;
+import org.oss.focussnip.model.SnapGoods;
 import org.oss.focussnip.model.Users;
-import org.oss.focussnip.service.UserService;
+import org.oss.focussnip.utils.RedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
@@ -19,14 +20,14 @@ class FocussnipApplicationTests {
     }
 
     @Autowired
-    private UserMapper loginMapper;
+    private RedisUtil<String, SnapGoods> redisUtil;
+
     @Autowired
-    private UserService loginService;
+    private RedisTemplate redisTemplate;
 
     @Test
     public void testSelect() {
-        System.out.println(("----- selectAll method test ------"));
-        List<Users> userList = loginMapper.selectList(null);
-        userList.forEach(System.out::println);
+        System.out.println(redisUtil.getValue("snap."+4020+".stock"));
+        System.out.println(redisUtil.incr("snap."+4020+".stock"));
     }
 }

@@ -5,5 +5,5 @@ import lombok.Data;
 @Data
 public class SnapIdOrderIdDto {
     Long snapId;
-    Long OrderId;
+    Long orderId;
 }
