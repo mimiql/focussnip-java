@@ -15,4 +15,9 @@ public class OrderConstant {
      * 订单已完成
      */
     public static final int ORDER_DONE = 2;
+
+    /**
+     * 订单已废弃
+     */
+    public static final int ORDER_CANCEL = -1;
 }

@@ -2,11 +2,17 @@ package org.oss.focussnip.api;
 
 import com.alipay.api.response.AlipayTradeQueryResponse;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.oss.focussnip.common.BaseResponse;
+import org.oss.focussnip.constant.OrderConstant;
+import org.oss.focussnip.dto.SnapIdOrderIdDto;
+import org.oss.focussnip.exception.BusinessErrorException;
 import org.oss.focussnip.model.SnapGoods;
+import org.oss.focussnip.model.SnapOrders;
 import org.oss.focussnip.service.AlipayService;
 import org.oss.focussnip.service.SnapService;
+import org.oss.focussnip.service.SnapOrderService;
 import org.oss.focussnip.utils.JWTUtil;
 import org.oss.focussnip.utils.RedisUtil;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
@@ -24,6 +30,8 @@ public class SnapController {
     @Autowired
     private SnapService snapService;
     @Autowired
+    private SnapOrderService snapOrderService;
+    @Autowired
     private AlipayService alipayService;
     @Resource
     private RedisUtil<String,SnapGoods> redisUtil;
@@ -33,6 +41,7 @@ public class SnapController {
     @PostMapping("/snap/init")
     public BaseResponse<String> initSnap(){
         List<SnapGoods> snapGoodsList = snapService.initSnap();
+        snapOrderService.initSnapOrder();
 
         for(SnapGoods it : snapGoodsList){
             String idStr = String.valueOf(it.getId());
@@ -52,7 +61,9 @@ public class SnapController {
 
     @GetMapping("/snap/get/{id}")
     public BaseResponse<SnapGoods> getSnap(@PathVariable Long id){
-        SnapGoods snap = redisUtil.getHash("snap",String.valueOf(id));
+        String idStr = String.valueOf(id);
+        SnapGoods snap = redisUtil.getHash("snap",idStr);
+        snap.setStock(redisUtil.getValue("snap."+idStr+".stock"));
         return BaseResponse.getSuccessResponse(snap);
     }
 
@@ -65,7 +76,7 @@ public class SnapController {
 
     @PostMapping("/snap/buy/{id}")
     public BaseResponse<String> buySnap(@RequestHeader("Authorization") String token, @PathVariable Long id){
-        rabbitTemplate.convertAndSend("DIRCET_EXCHANGE","snapOrder",token+"："+String.valueOf(id));
+        rabbitTemplate.convertAndSend("DIRCET_EXCHANGE","snapOrder",token+"："+ id);
         return BaseResponse.getSuccessResponse("成功参与抢购");
     }
 
@@ -78,15 +89,15 @@ public class SnapController {
         long id = Long.parseLong(idStr);
         SnapGoods snapGoods = redisUtil.getHash("snap",idStr);
 
-        if(timeCheck(snapGoods.getEndTime()) || stockCheck(idStr) || tokenCheck(token) || check){
+        if(timeCheck(snapGoods.getEndTime()) || stockCheck(idStr) || tokenCheck(token) || checkHasOrder(token)){
             //不符合要求
             redisUtil.putValue(token+".order",-1);
             return;
         }
-
-        // todo: 重复消费
-        // todo: 生成订单
-        // todo: 订单入redis
+        String username = JWTUtil.getUsername(token);
+        Integer orderId = snapOrderService.createOrder(snapGoods,username);
+        if (null != orderId)
+            redisUtil.putValue(token+".order",orderId);
     }
 
     private boolean timeCheck(LocalDateTime localDateTime){
@@ -103,18 +114,26 @@ public class SnapController {
         return false;
     }
 
-    @GetMapping("/snip/check")
-    @RequiresAuthentication
-    public BaseResponse<String> checkSnap(){
-        // todo: 查redis订单
-        return BaseResponse.getSuccessResponse("成功参与抢购");
+    private boolean checkHasOrder(String token){
+        return redisUtil.incr("snap.token." + token) != 1;
     }
 
-    @PostMapping("/snip/confirm/{id}")
+    @GetMapping("/snip/check/{id}")
     @RequiresAuthentication
-    public BaseResponse<String> confirmSnap(@PathVariable Long id){
-        // todo: redis乐观锁扣库存
-        // todo: 订单状态已确认
+    public BaseResponse<SnapOrders> checkSnap(@PathVariable Long id){
+        String username = (String) SecurityUtils.getSubject().getPrincipal();
+        SnapOrders snapOrders = snapOrderService.getBySnapIdAndUsername(id,username);
+        return BaseResponse.getSuccessResponse(snapOrders);
+    }
+
+    @PostMapping("/snip/confirm")
+    public BaseResponse<String> confirmSnap(@RequestBody SnapIdOrderIdDto snapIdOrderIdDto){
+        if(!redisUtil.optimismLock("snap."+snapIdOrderIdDto.getSnapId()+".stock",1)) {
+            throw new BusinessErrorException("1111111","库存不足");
+        }
+        SnapOrders snapOrder = snapOrderService.getById(snapIdOrderIdDto.getOrderId());
+        snapOrder.setStatus(OrderConstant.ORDER_PAYED);
+        snapOrderService.updateById(snapOrder);
         return BaseResponse.getSuccessResponse("成功参与抢购");
     }
 
@@ -123,19 +142,22 @@ public class SnapController {
         AlipayTradeQueryResponse response = alipayService.queryOrder(orderId.toString());
         String tradeStatus = response.getTradeStatus();
         if("TRADE_SUCCESS".equals(tradeStatus)){
-            // todo: 订单状态已支付
+
+            SnapOrders snapOrder = snapOrderService.getById(orderId);
+            snapOrder.setStatus(OrderConstant.ORDER_DONE);
+            snapOrderService.updateById(snapOrder);
             return BaseResponse.getSuccessResponse("支付成功");
         }
         return BaseResponse.getErrorResponse("000","支付未完成");
     }
 
-    @PostMapping("/snip/cancel/{Id}")
-    public BaseResponse<String> cancelPay(@PathVariable Long Id) throws Exception{
-        // todo: 回滚库存
-        if(true){
-            // todo: 订单状态已废弃
-            return BaseResponse.getSuccessResponse("支付成功");
-        }
-        return BaseResponse.getErrorResponse("000","支付未完成");
+    @PostMapping("/snip/cancel/{orderId}")
+    public BaseResponse<String> cancelPay(@PathVariable Long orderId) throws Exception{
+        SnapOrders snapOrder = snapOrderService.getById(orderId);
+        long snapID = snapOrder.getSnapId();
+        redisUtil.incr("snap."+snapID+".stock");
+        snapOrder.setStatus(OrderConstant.ORDER_CANCEL);
+        snapOrderService.updateById(snapOrder);
+        return BaseResponse.getSuccessResponse("取消成功");
     }
 }

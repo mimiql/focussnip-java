@@ -1,11 +1,14 @@
 package org.oss.focussnip.model;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
 import java.time.LocalDateTime;
 
 @Data
 public class Goods {
+    @TableId(type = IdType.AUTO)
     private String goodsId;
     private String goodsName;
     private String address;

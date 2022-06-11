@@ -63,7 +63,7 @@ public class RedisUtil<K,V> {
                 redisTemplate.unwatch();
                 break;
             }
-            valueOps.decrement(k,1);
+            valueOps.decrement(k,change);
             List exec = redisTemplate.exec();
             if(exec.size()!=0){
                 flag = true;
@@ -75,14 +75,9 @@ public class RedisUtil<K,V> {
         return flag;
     }
 
-    public Long incr(String key, long liveTime) {
+    public Long incr(String key) {
         RedisAtomicLong entityIdCounter = new RedisAtomicLong(key, redisTemplate.getConnectionFactory());
-        long increment = entityIdCounter.getAndIncrement();
-
-        if ( increment == 0 && liveTime > 0) {//初始设置过期时间
-            entityIdCounter.expire(liveTime, TimeUnit.SECONDS);
-        }
-        return increment;
+        return entityIdCounter.getAndIncrement();
     }
 
     public void putinList(String key, V... v){
