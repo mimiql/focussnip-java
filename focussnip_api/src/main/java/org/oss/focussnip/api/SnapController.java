@@ -29,6 +29,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Api("抢购Api")
+@CrossOrigin(origins = "*")
 @RestController
 public class SnapController {
     @Autowired
