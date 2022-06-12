@@ -3,6 +3,8 @@ package org.oss.focussnip.api;
 import com.alipay.api.response.AlipayTradeQueryResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.benmanes.caffeine.cache.Cache;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.oss.focussnip.common.BaseResponse;
@@ -26,6 +28,7 @@ import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Api("抢购Api")
 @RestController
 public class SnapController {
     @Autowired
@@ -42,7 +45,7 @@ public class SnapController {
     private AmqpTemplate rabbitTemplate;
 
     @PostConstruct
-    public BaseResponse<String> initSnap() throws JsonProcessingException {
+    public void initSnap(){
         List<SnapGoods> snapGoodsList = snapService.initSnap();
         snapOrderService.initSnapOrder();
         caffeineCache.put("snap.list",snapGoodsList);
@@ -51,10 +54,9 @@ public class SnapController {
             redisUtil.putHash("snap",idStr,it);
             redisUtil.putValue("snap."+idStr+".stock", it.getStock());
         }
-
-        return BaseResponse.getSuccessResponse("成功初始化snap");
     }
 
+    @ApiOperation("/获取全部抢购商品信息")
     @GetMapping("/snap")
     public BaseResponse<List<SnapGoods>> getSnapList() throws JsonProcessingException {
         caffeineCache.getIfPresent("snap.list");
@@ -62,6 +64,7 @@ public class SnapController {
         return BaseResponse.getSuccessResponse(snapGoodsList);
     }
 
+    @ApiOperation("/获取指定抢购商品信息")
     @GetMapping("/snap/get/{id}")
     public BaseResponse<SnapGoods> getSnap(@PathVariable Long id){
         String idStr = String.valueOf(id);
@@ -70,6 +73,7 @@ public class SnapController {
         return BaseResponse.getSuccessResponse(snap);
     }
 
+    @ApiOperation("/参加抢购活动")
     @PostMapping("/snap/join")
     @RequiresAuthentication
     public BaseResponse<String> joinSnap(@RequestHeader("Authorization") String token){
@@ -77,6 +81,7 @@ public class SnapController {
         return BaseResponse.getSuccessResponse("成功参与抢购");
     }
 
+    @ApiOperation("/购买指定抢购商品")
     @PostMapping("/snap/buy/{id}")
     public BaseResponse<String> buySnap(@RequestHeader("Authorization") String token, @PathVariable Long id){
         rabbitTemplate.convertAndSend("DIRECT_EXCHANGE","snapOrder",token+"："+ id);
@@ -121,16 +126,21 @@ public class SnapController {
         return ! new Integer(redisUtil.incr("snap.token." + token).intValue()).equals(0);
     }
 
+    @ApiOperation("/检验抢购下单结果")
     @GetMapping("/snap/check")
     @RequiresAuthentication
     public BaseResponse<SnapOrders> checkSnap(@RequestHeader("Authorization") String token){
-        int orderId = redisUtil.getValue(token+".order");
+        Integer orderId = redisUtil.getValue(token+".order");
+        if(null == orderId){
+            return BaseResponse.getErrorResponse("00000","继续排队");
+        }
         if(orderId==-1){
             return BaseResponse.getErrorResponse("11111","抢购失败");
         }
         return BaseResponse.getSuccessResponse(snapOrderService.getById(orderId));
     }
 
+    @ApiOperation("/确认订单")
     @PostMapping("/snap/confirm")
     public BaseResponse<String> confirmSnap(@RequestBody SnapIdOrderIdDto snapIdOrderIdDto){
         SnapOrders snapOrder = snapOrderService.getById(snapIdOrderIdDto.getOrderId());
@@ -147,6 +157,7 @@ public class SnapController {
         return BaseResponse.getSuccessResponse("成功参与抢购");
     }
 
+    @ApiOperation("/确认支付")
     @PostMapping("/snap/alipay/query/{orderId}")
     public BaseResponse<String> queryAlipay(@PathVariable Long orderId) throws Exception{
         AlipayTradeQueryResponse response = alipayService.queryOrder(orderId.toString());
@@ -161,6 +172,7 @@ public class SnapController {
         return BaseResponse.getErrorResponse("000","支付未完成");
     }
 
+    @ApiOperation("/取消订单")
     @PostMapping("/snap/cancel/{orderId}")
     public BaseResponse<String> cancelPay(@PathVariable Long orderId) throws Exception{
         SnapOrders snapOrder = snapOrderService.getById(orderId);
