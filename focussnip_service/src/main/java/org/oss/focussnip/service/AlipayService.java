@@ -11,4 +11,8 @@ public interface AlipayService {
 
     AlipayTradeQueryResponse queryOrder(String orderId) throws Exception;
 
+    AlipayTradePrecreateResponse newSnapAliOrder(Long snapOrderId) throws AlipayApiException;
+
+    AlipayTradeQueryResponse querySnapOrder(String snapOrderId) throws Exception;
+
 }

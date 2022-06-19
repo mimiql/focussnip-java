@@ -33,4 +33,21 @@ public class AlipayController {
         return BaseResponse.getSuccessResponse(tradeStatus);
     }
 
+    @PostMapping("/alipay/snapOrder/{snapOrderId}")
+    public BaseResponse<String> anspOrderAlipay(@PathVariable Long snapOrderId) throws Exception{
+        AlipayTradePrecreateResponse response = alipayService.newSnapAliOrder(snapOrderId);
+        String QrCodeStr = response.getQrCode();
+        return BaseResponse.getSuccessResponse(QrCodeStr);
+    }
+
+    /**
+     * TRADE_SUCCESS
+     * WAIT_BUYER_PAY
+     */
+    @PostMapping("/alipay/SnapQuery/{snapOrderId}")
+    public BaseResponse<String> querySnapAlipay(@PathVariable Long snapOrderId) throws Exception{
+        AlipayTradeQueryResponse response = alipayService.querySnapOrder(snapOrderId.toString());
+        String tradeStatus = response.getTradeStatus();
+        return BaseResponse.getSuccessResponse(tradeStatus);
+    }
 }

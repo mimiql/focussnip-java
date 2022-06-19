@@ -12,6 +12,7 @@ import com.alipay.api.response.AlipayTradePrecreateResponse;
 import com.alipay.api.response.AlipayTradeQueryResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.oss.focussnip.model.Orders;
+import org.oss.focussnip.model.SnapOrders;
 import org.oss.focussnip.service.AlipayService;
 import org.springframework.stereotype.Service;
 
@@ -35,6 +36,10 @@ public class AlipayServiceImpl implements AlipayService {
     @Resource
     private OrderServiceImpl orderService;
 
+    @Resource
+    private SnapOrdersServiceImpl snapOrdersService ;
+
+    private static String SNAPORDER = "00";
 
     @Override
     public AlipayTradePrecreateResponse newAliOrder(Long orderId) throws AlipayApiException {
@@ -45,7 +50,28 @@ public class AlipayServiceImpl implements AlipayService {
         JSONObject bizContent = new JSONObject();
         bizContent.put("out_trade_no", orders.getOrderId());
         bizContent.put("total_amount", orders.getPrice());
-        bizContent.put("subject", "focussnip");
+        bizContent.put("subject", "focussnip 订单号: " + orderId);
+
+        request.setBizContent(bizContent.toString());
+        AlipayTradePrecreateResponse response = alipayClient.execute(request);
+        if(response.isSuccess()){
+            System.out.println("调用阿里沙箱支付成功,QRCode:" + response.getQrCode());
+        } else {
+            System.out.println("调用失败");
+        }
+        return response;
+    }
+
+    @Override
+    public AlipayTradePrecreateResponse newSnapAliOrder(Long snapOrderId) throws AlipayApiException {
+        AlipayClient alipayClient = new DefaultAlipayClient(aliUrl,aliAppId,aliAppPrivateKey,"json","utf-8",alipayPublicKey,"RSA2");
+        AlipayTradePrecreateRequest request = new AlipayTradePrecreateRequest();
+        SnapOrders snapOrders = snapOrdersService.getById(snapOrderId);
+        request.setNotifyUrl("focussnip");
+        JSONObject bizContent = new JSONObject();
+        bizContent.put("out_trade_no", SNAPORDER + snapOrders.getId());
+        bizContent.put("total_amount", snapOrders.getPrice());
+        bizContent.put("subject", "focussnip 订单号: " + SNAPORDER + snapOrderId);
 
         request.setBizContent(bizContent.toString());
         AlipayTradePrecreateResponse response = alipayClient.execute(request);
@@ -68,4 +94,14 @@ public class AlipayServiceImpl implements AlipayService {
         return response;
     }
 
+    @Override
+    public AlipayTradeQueryResponse querySnapOrder(String snapOrderId) throws Exception {
+        AlipayClient alipayClient = new DefaultAlipayClient(aliUrl, aliAppId, aliAppPrivateKey, "json", "utf-8", alipayPublicKey, "RSA2");
+        AlipayTradeQueryRequest request = new AlipayTradeQueryRequest();
+        AlipayTradeQueryModel model = new AlipayTradeQueryModel();
+        model.setOutTradeNo(SNAPORDER + snapOrderId);
+        request.setBizModel(model);
+        AlipayTradeQueryResponse response = alipayClient.execute(request);
+        return response;
+    }
 }
