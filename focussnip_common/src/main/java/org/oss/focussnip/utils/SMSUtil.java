@@ -13,7 +13,7 @@ import com.aliyuncs.profile.DefaultProfile;
 public class SMSUtil {
     private static String accessKeyId = "LTAI4FckBwTXnPMvfPygrB5F";
     private static String regionld = "cn-hangzhou";
-    private static String secret = "yb9NwGZCue7JktSOZoeQWKkeENhegF";
+    private static String secret = "";
 
     public static boolean SendSMS(String phoneNumber , String code){
         // 1.创建接口API调用对象
